@@ -72,17 +72,19 @@ function onMessageReceived(payload) {
 
     var messageElement = document.createElement('li');
 
+    var dateString = '[' + new Date(message.timestamp).toLocaleTimeString() + '] ';
+
     if(message.type === 'JOIN') {
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' joined!';
+        message.content = dateString + ' ' + message.sender + ' joined!';
     } else if (message.type === 'LEAVE') {
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' left!';
+        message.content = dateString + ' ' + message.sender + ' left!';
     } else {
         messageElement.classList.add('chat-message');
 
         var timestampElement = document.createElement('span');
-        var timestampText = document.createTextNode('[' + new Date(message.timestamp).toLocaleTimeString() + '] ');
+        var timestampText = document.createTextNode(dateString);
         timestampElement.appendChild(timestampText);
 
         var usernameElement = document.createElement('span');
