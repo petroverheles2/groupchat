@@ -115,19 +115,14 @@ function onMessageReceived(payload) {
 function initWordCounters () {
     $.get('/current-counters',
         function (data) {
-            console.log("init counters: " + JSON.stringify(data));
-
             $.each(data, function(key, value) {
-                console.log(key + ": " + value );
-                appendCounterElement(key, value);
+                countersArea.appendChild(createCounterElement(key, value));
             });
-
-            countersArea.scrollTop = messageArea.scrollHeight;
         }
     );
 }
 
-function appendCounterElement(key, value) {
+function createCounterElement(key, value) {
     var counterElement = document.createElement('li');
 
     counterElement.classList.add('chat-message');
@@ -142,8 +137,33 @@ function appendCounterElement(key, value) {
     var valueText = document.createTextNode(value);
     valueElement.appendChild(valueText);
     counterElement.appendChild(valueElement);
+    return counterElement;
+}
 
-    countersArea.appendChild(counterElement);
+function appendCounterElement(key, value) {
+    var counterElement = createCounterElement(key, value);
+
+
+    if (countersArea.childElementCount == 0) {
+        countersArea.appendChild(counterElement);
+    } else {
+        // alphabetical order
+        var added = false;
+        $(countersArea).find('li').each(function() {
+            var word = $(this).find('span:last').attr('id');
+
+            if (word.localeCompare(key) > 0) {
+                $(this).before(counterElement);
+                added = true;
+                return false;
+            }
+        });
+
+        if (!added) {
+            countersArea.appendChild(counterElement);
+        }
+    }
+
 }
 
 usernameForm.addEventListener('submit', connect, true)

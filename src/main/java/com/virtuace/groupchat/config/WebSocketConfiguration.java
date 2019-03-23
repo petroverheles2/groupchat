@@ -28,7 +28,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Bean
     public ConcurrentMap<String, AtomicLong> wordCounters() {
-        return new ConcurrentSkipListMap<>(String.CASE_INSENSITIVE_ORDER);
+        return new ConcurrentSkipListMap<>();
     }
 
 }

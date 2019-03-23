@@ -26,7 +26,8 @@ public class WordsCounterService {
         }
 
         words.forEach(word -> {
-                    Long currentCount = wordCounters.computeIfAbsent(word, w -> new AtomicLong()).incrementAndGet();
+            word = word.toLowerCase();
+            Long currentCount = wordCounters.computeIfAbsent(word, w -> new AtomicLong()).incrementAndGet();
                     countersUpdate.put(word, currentCount);
                 }
         );

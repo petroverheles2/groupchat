@@ -55,6 +55,14 @@ public class WordsCounterServiceTest {
         assertThat(countersUpdate.get("test3")).isEqualTo(1L);
     }
 
+    @Test
+    public void keysTransformedToLowerCaseElementsListArgument() {
+        Map<String, Long> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("Test1", "test2", "test1"));
+        assertThat(countersUpdate).hasSize(2);
+        assertThat(countersUpdate.get("test1")).isEqualTo(2L);
+        assertThat(countersUpdate.get("test2")).isEqualTo(1L);
+    }
+
     @Test(timeout = 500L)
     public void performanceTestForSingleWord() {
         List<String> words = Collections.singletonList("test");
