@@ -68,6 +68,14 @@ public class WordsExtractorServiceTest {
         assertThat(words).contains("познакомиться");
     }
 
+    @Test
+    public void duplicatedWords() {
+        Iterable<String> words = wordsExtractorService.extract("Привет привет");
+        assertThat(words).hasSize(2);
+        assertThat(words.iterator().next()).isEqualTo("привет");
+        assertThat(words.iterator().next()).isEqualTo("привет");
+    }
+
     @Test(timeout = 100L)
     public void permormanceTest() {
         for (int i = 0; i < 1000; i++) {
