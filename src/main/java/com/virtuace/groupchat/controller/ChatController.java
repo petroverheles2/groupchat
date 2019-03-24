@@ -33,13 +33,14 @@ public class ChatController {
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
 
-        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(wordsExtractorService.extract(chatMessage.getContent()));
+        Iterable<String> wordsToIncrement = wordsExtractorService.extract(chatMessage.getContent());
+        wordsCounterService.incrementCounters(wordsToIncrement);
 
         ChatIncrementMessage chatIncrementMessage = new ChatIncrementMessage();
         chatIncrementMessage.setType(chatMessage.getType());
         chatIncrementMessage.setSender(chatMessage.getSender());
         chatIncrementMessage.setContent(chatMessage.getContent());
-        chatIncrementMessage.setIncrements(countersUpdate);
+        chatIncrementMessage.setIncrements(wordsToIncrement);
         chatIncrementMessage.setTimestamp(timeService.getCurrentTimeMillis());
 
         return chatIncrementMessage;

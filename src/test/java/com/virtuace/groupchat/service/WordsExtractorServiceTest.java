@@ -50,9 +50,9 @@ public class WordsExtractorServiceTest {
     public void severalWords() {
         Iterable<String> words = wordsExtractorService.extract("Hello, everybody. Nice to meet you!");
         assertThat(words).hasSize(6);
-        assertThat(words).contains("Hello");
+        assertThat(words).contains("hello");
         assertThat(words).contains("everybody");
-        assertThat(words).contains("Nice");
+        assertThat(words).contains("nice");
         assertThat(words).contains("to");
         assertThat(words).contains("meet");
         assertThat(words).contains("you");
@@ -62,9 +62,9 @@ public class WordsExtractorServiceTest {
     public void cyrillicWord() {
         Iterable<String> words = wordsExtractorService.extract("Привет всем. Приятно познакомиться!");
         assertThat(words).hasSize(4);
-        assertThat(words).contains("Привет");
+        assertThat(words).contains("привет");
         assertThat(words).contains("всем");
-        assertThat(words).contains("Приятно");
+        assertThat(words).contains("приятно");
         assertThat(words).contains("познакомиться");
     }
 

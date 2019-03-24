@@ -23,51 +23,43 @@ public class WordsCounterServiceTest {
 
     @Test
     public void nullArgument() {
-        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(null);
-        assertThat(countersUpdate).isEmpty();
+        wordsCounterService.incrementCounters(null);
+        assertThat(wordCounters).isEmpty();
     }
 
     @Test
     public void emptyListArgument() {
-        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(new ArrayList<>(0));
-        assertThat(countersUpdate).isEmpty();
+        wordsCounterService.incrementCounters(new ArrayList<>(0));
+        assertThat(wordCounters).isEmpty();
     }
 
     @Test
     public void oneElementListArgument() {
-        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Collections.singletonList("test"));
-        assertThat(countersUpdate).hasSize(1);
-        assertThat(countersUpdate).contains("test");
+        wordsCounterService.incrementCounters(Collections.singletonList("test"));
+        assertThat(wordCounters).hasSize(1);
+        assertThat(wordCounters.get("test").get()).isEqualTo(1L);
     }
 
     @Test
     public void twoElementsListArgument() {
-        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test2"));
-        assertThat(countersUpdate).hasSize(2);
-        assertThat(countersUpdate).contains("test1");
-        assertThat(countersUpdate).contains("test2");
+        wordsCounterService.incrementCounters(Arrays.asList("test1", "test2"));
+        assertThat(wordCounters).hasSize(2);
+        assertThat(wordCounters.get("test1").get()).isEqualTo(1L);
+        assertThat(wordCounters.get("test2").get()).isEqualTo(1L);
     }
 
     @Test
     public void twoSameElementsListArgument() {
-        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test3", "test3"));
+        wordsCounterService.incrementCounters(Arrays.asList("test3", "test3"));
 
-        assertThat(countersUpdate).hasSize(2);
-        assertThat(countersUpdate).contains("test3");
-    }
-
-    @Test
-    public void keysTransformedToLowerCaseElementsListArgument() {
-        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("Test1", "test2"));
-        assertThat(countersUpdate).hasSize(2);
-        assertThat(countersUpdate).contains("test1");
-        assertThat(countersUpdate).contains("test2");
+        assertThat(wordCounters).hasSize(1);
+        assertThat(wordCounters.get("test3").get()).isEqualTo(2L);
     }
 
     @Test
     public void updateCounterAfterTwoCalls() {
-        wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test2"));
-        wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test3"));
+        wordsCounterService.incrementCounters(Arrays.asList("test1", "test2"));
+        wordsCounterService.incrementCounters(Arrays.asList("test1", "test3"));
 
         assertThat(wordCounters).hasSize(3);
         assertThat(wordCounters.get("test1").get()).isEqualTo(2L);
@@ -78,13 +70,13 @@ public class WordsCounterServiceTest {
     @Test(timeout = 500L)
     public void performanceTestForSingleWord() {
         List<String> words = Collections.singletonList("test");
-        IntStream.range(0, 1000000).forEach(i -> wordsCounterService.incrementCountersAndGetUpdated(words));
+        IntStream.range(0, 1000000).forEach(i -> wordsCounterService.incrementCounters(words));
     }
 
     @Test(timeout = 500L)
     public void performanceParallelTestForSingleWord() {
         List<String> words = Collections.singletonList("test");
-        IntStream.range(0, 1000000).parallel().forEach(i -> wordsCounterService.incrementCountersAndGetUpdated(words));
+        IntStream.range(0, 1000000).parallel().forEach(i -> wordsCounterService.incrementCounters(words));
     }
 
     @Test
@@ -101,7 +93,7 @@ public class WordsCounterServiceTest {
 
         IntStream.range(0, 100).forEach(i ->
                 words.forEach(internalWords ->
-                    wordsCounterService.incrementCountersAndGetUpdated(internalWords))
+                    wordsCounterService.incrementCounters(internalWords))
                 );
     }
 }

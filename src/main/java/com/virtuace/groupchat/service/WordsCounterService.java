@@ -3,10 +3,6 @@ package com.virtuace.groupchat.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -20,20 +16,11 @@ public class WordsCounterService {
         this.wordCounters = wordCounters;
     }
 
-    public List<String> incrementCountersAndGetUpdated(Iterable<String> words) {
-        List<String> updatedWords = new ArrayList<>();
-
+    public void incrementCounters(Iterable<String> words) {
         if (words == null) {
-            return updatedWords;
+            return;
         }
 
-        words.forEach(word -> {
-                word = word.toLowerCase();
-                wordCounters.computeIfAbsent(word, w -> new AtomicLong()).incrementAndGet();
-                updatedWords.add(word);
-            }
-        );
-
-        return updatedWords;
+        words.forEach(word -> wordCounters.computeIfAbsent(word, w -> new AtomicLong()).incrementAndGet());
     }
 }
