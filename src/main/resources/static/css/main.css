@@ -17,19 +17,8 @@ body {
     font-size: 1rem;
     line-height: 1.58;
     color: #333;
-    background-color: #f4f4f4;
+    background-color: #35acf2;;
     height: 100%;
-}
-
-body:before {
-    height: 50%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: #35acf2;
-    content: "";
-    z-index: 0;
 }
 
 .clearfix:after {
