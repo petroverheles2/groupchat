@@ -94,12 +94,12 @@ function onMessageReceived(payload) {
         messageElement.appendChild(timestampElement);
         messageElement.appendChild(usernameElement);
 
-        $.each(message.counters, function(key, value) {
-            var counterValue = document.querySelector("#" + key);
+        $.each(message.increments, function(index, value) {
+            var counterValue = document.querySelector("#" + value);
             if (counterValue !== null) {
-                counterValue.textContent = value;
+                counterValue.textContent = Number(counterValue.textContent) + 1;
             } else {
-                appendCounterElement(key, value);
+                appendCounterElement(value, 1);
             }
         });
     }

@@ -1,7 +1,7 @@
 package com.virtuace.groupchat.controller;
 
 import com.virtuace.groupchat.model.ChatMessage;
-import com.virtuace.groupchat.model.ChatCounterMessage;
+import com.virtuace.groupchat.model.ChatIncrementMessage;
 import com.virtuace.groupchat.service.TimeService;
 import com.virtuace.groupchat.service.WordsCounterService;
 import com.virtuace.groupchat.service.WordsExtractorService;
@@ -12,7 +12,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
-import java.util.Map;
+import java.util.List;
 
 @Controller
 public class ChatController {
@@ -33,16 +33,16 @@ public class ChatController {
     @SendTo("/topic/public")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
 
-        Map<String, Long> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(wordsExtractorService.extract(chatMessage.getContent()));
+        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(wordsExtractorService.extract(chatMessage.getContent()));
 
-        ChatCounterMessage chatCounterMessage = new ChatCounterMessage();
-        chatCounterMessage.setType(chatMessage.getType());
-        chatCounterMessage.setSender(chatMessage.getSender());
-        chatCounterMessage.setContent(chatMessage.getContent());
-        chatCounterMessage.setCounters(countersUpdate);
-        chatCounterMessage.setTimestamp(timeService.getCurrentTimeMillis());
+        ChatIncrementMessage chatIncrementMessage = new ChatIncrementMessage();
+        chatIncrementMessage.setType(chatMessage.getType());
+        chatIncrementMessage.setSender(chatMessage.getSender());
+        chatIncrementMessage.setContent(chatMessage.getContent());
+        chatIncrementMessage.setIncrements(countersUpdate);
+        chatIncrementMessage.setTimestamp(timeService.getCurrentTimeMillis());
 
-        return chatCounterMessage;
+        return chatIncrementMessage;
     }
 
     @MessageMapping("/chat.addUser")

@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -12,55 +13,66 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WordsCounterServiceTest {
 
     private WordsCounterService wordsCounterService;
+    private ConcurrentHashMap<String, AtomicLong> wordCounters;
 
     @Before
     public void setUp() {
-        wordsCounterService = new WordsCounterService(new ConcurrentHashMap<>());
+        wordCounters = new ConcurrentHashMap<>();
+        wordsCounterService = new WordsCounterService(wordCounters);
     }
 
     @Test
     public void nullArgument() {
-        Map<String, Long> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(null);
+        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(null);
         assertThat(countersUpdate).isEmpty();
     }
 
     @Test
     public void emptyListArgument() {
-        Map<String, Long> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(new ArrayList<>(0));
+        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(new ArrayList<>(0));
         assertThat(countersUpdate).isEmpty();
     }
 
     @Test
     public void oneElementListArgument() {
-        Map<String, Long> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Collections.singletonList("test"));
+        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Collections.singletonList("test"));
         assertThat(countersUpdate).hasSize(1);
-        assertThat(countersUpdate.get("test")).isEqualTo(1L);
+        assertThat(countersUpdate).contains("test");
     }
 
     @Test
     public void twoElementsListArgument() {
-        Map<String, Long> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test2"));
+        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test2"));
         assertThat(countersUpdate).hasSize(2);
-        assertThat(countersUpdate.get("test1")).isEqualTo(1L);
-        assertThat(countersUpdate.get("test2")).isEqualTo(1L);
+        assertThat(countersUpdate).contains("test1");
+        assertThat(countersUpdate).contains("test2");
     }
 
     @Test
-    public void updateCounterInSecondCallListArgument() {
-        wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test2"));
-        Map<String, Long> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test3"));
+    public void twoSameElementsListArgument() {
+        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test3", "test3"));
 
         assertThat(countersUpdate).hasSize(2);
-        assertThat(countersUpdate.get("test1")).isEqualTo(2L);
-        assertThat(countersUpdate.get("test3")).isEqualTo(1L);
+        assertThat(countersUpdate).contains("test3");
     }
 
     @Test
     public void keysTransformedToLowerCaseElementsListArgument() {
-        Map<String, Long> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("Test1", "test2", "test1"));
+        List<String> countersUpdate = wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("Test1", "test2"));
         assertThat(countersUpdate).hasSize(2);
-        assertThat(countersUpdate.get("test1")).isEqualTo(2L);
-        assertThat(countersUpdate.get("test2")).isEqualTo(1L);
+        assertThat(countersUpdate).contains("test1");
+        assertThat(countersUpdate).contains("test2");
+    }
+
+    @Test
+    public void updateCounterAfterTwoCalls() {
+        wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test2"));
+        wordsCounterService.incrementCountersAndGetUpdated(Arrays.asList("test1", "test3"));
+
+        assertThat(wordCounters).hasSize(3);
+        assertThat(wordCounters.get("test1").get()).isEqualTo(2L);
+        assertThat(wordCounters.get("test2").get()).isEqualTo(1L);
+        assertThat(wordCounters.get("test3").get()).isEqualTo(1L);
     }
 
     @Test(timeout = 500L)
