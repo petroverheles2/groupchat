@@ -1,24 +1,19 @@
 'use strict';
 
-var usernamePage = document.querySelector('#username-page');
-var chatPage = document.querySelector('#chat-page');
-var usernameForm = document.querySelector('#usernameForm');
-var messageForm = document.querySelector('#messageForm');
-var messageInput = document.querySelector('#message');
-var messageArea = document.querySelector('#messageArea');
-var countersArea = document.querySelector('#countersArea');
-var chatConnectingElement = document.querySelector('#chatConnecting');
-var counterConnectingElement = document.querySelector('#counterConnecting');
+var messageInput = $('#message');
+var messageArea = $('#messageArea');
+var countersArea = $('#countersArea');
+var chatConnectingElement = $('#chatConnecting');
 
 var stompClient = null;
 var username = null;
 
 function connect(event) {
-    username = document.querySelector('#name').value.trim();
+    username = $('#name').val().trim();
 
     if(username) {
-        usernamePage.classList.add('hidden');
-        chatPage.classList.remove('hidden');
+        $('#username-page').addClass('hidden');
+        $('#chat-page').removeClass('hidden');
 
         var socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
@@ -41,27 +36,27 @@ function onConnected() {
 
     initWordCounters();
 
-    chatConnectingElement.classList.add('hidden');
-    counterConnectingElement.classList.add('hidden');
+    chatConnectingElement.addClass('hidden');
+    $('#counterConnecting').addClass('hidden');
 }
 
 
 function onError(error) {
-    chatConnectingElement.textContent = 'Could not connect to WebSocket server. Please refresh this page to try again!';
-    chatConnectingElement.style.color = 'red';
+    chatConnectingElement.text('Could not connect to WebSocket server. Please refresh this page to try again!');
+    chatConnectingElement.css('color', 'red');
 }
 
 
 function sendMessage(event) {
-    var messageContent = messageInput.value.trim();
-    if(messageContent && stompClient) {
+    var messageText = messageInput.val().trim();
+    if(messageText && stompClient) {
         var chatMessage = {
             sender: username,
-            content: messageInput.value,
+            content: messageText,
             type: 'CHAT'
         };
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
-        messageInput.value = '';
+        messageInput.val('');
     }
     event.preventDefault();
 }
@@ -70,29 +65,27 @@ function sendMessage(event) {
 function onMessageReceived(payload) {
     var message = JSON.parse(payload.body);
 
-    var messageElement = document.createElement('li');
+    var messageElement = $('<li></li>');
 
     var dateString = '[' + new Date(message.timestamp).toLocaleTimeString() + '] ';
 
     if(message.type === 'JOIN') {
-        messageElement.classList.add('event-message');
+        messageElement.addClass('event-message');
         message.content = dateString + ' ' + message.sender + ' joined!';
     } else if (message.type === 'LEAVE') {
-        messageElement.classList.add('event-message');
+        messageElement.addClass('event-message');
         message.content = dateString + ' ' + message.sender + ' left!';
     } else {
-        messageElement.classList.add('chat-message');
+        messageElement.addClass('chat-message');
 
-        var timestampElement = document.createElement('span');
-        var timestampText = document.createTextNode(dateString);
-        timestampElement.appendChild(timestampText);
+        var timestampElement = $('<span></span>');
+        timestampElement.text(dateString);
 
-        var usernameElement = document.createElement('span');
-        var usernameText = document.createTextNode(message.sender);
-        usernameElement.appendChild(usernameText);
+        var usernameElement = $('<span></span>');
+        usernameElement.text(message.sender);
 
-        messageElement.appendChild(timestampElement);
-        messageElement.appendChild(usernameElement);
+        messageElement.append(timestampElement);
+        messageElement.append(usernameElement);
 
         $.each(message.increments, function(index, value) {
             var counterValue = document.querySelector("#" + value);
@@ -104,41 +97,41 @@ function onMessageReceived(payload) {
         });
     }
 
-    var textElement = document.createElement('p');
-    var messageText = document.createTextNode(message.content);
-    textElement.appendChild(messageText);
+    var textElement = $('<p></p>');
+    textElement.text(message.content);
 
-    messageElement.appendChild(textElement);
+    messageElement.append(textElement);
 
-    messageArea.appendChild(messageElement);
-    messageArea.scrollTop = messageArea.scrollHeight;
+    messageArea.append(messageElement);
+    messageArea.scrollTop(messageArea.prop("scrollHeight"));
 }
 
 function initWordCounters () {
     $.get('/current-counters',
         function (data) {
             $.each(data, function(key, value) {
-                countersArea.appendChild(createCounterElement(key, value));
+                countersArea.append(createCounterElement(key, value));
             });
         }
     );
 }
 
 function createCounterElement(key, value) {
-    var counterElement = document.createElement('li');
 
-    counterElement.classList.add('chat-message');
+    var counterElement = $('<li></li>');
+    counterElement.addClass('chat-message');
 
-    var wordElement = document.createElement('span');
-    var wordText = document.createTextNode(key + ': ');
-    wordElement.appendChild(wordText);
-    counterElement.appendChild(wordElement);
+    var wordElement = $('<span></span>');
+    wordElement.text(key + ': ');
 
-    var valueElement = document.createElement('span');
-    valueElement.id = key;
-    var valueText = document.createTextNode(value);
-    valueElement.appendChild(valueText);
-    counterElement.appendChild(valueElement);
+    counterElement.append(wordElement);
+
+    var valueElement = $('<span></span>');
+    valueElement.attr('id', key);
+    valueElement.text(value);
+
+    counterElement.append(valueElement);
+
     return counterElement;
 }
 
@@ -146,12 +139,12 @@ function appendCounterElement(key, value) {
     var counterElement = createCounterElement(key, value);
 
 
-    if (countersArea.childElementCount == 0) {
-        countersArea.appendChild(counterElement);
+    if (countersArea.length == 0) {
+        countersArea.append(counterElement);
     } else {
         // alphabetical order
         var added = false;
-        $(countersArea).find('li').each(function() {
+        countersArea.find('li').each(function() {
             var word = $(this).find('span:last').attr('id');
 
             if (word.localeCompare(key) > 0) {
@@ -162,11 +155,11 @@ function appendCounterElement(key, value) {
         });
 
         if (!added) {
-            countersArea.appendChild(counterElement);
+            countersArea.append(counterElement);
         }
     }
 
 }
 
-usernameForm.addEventListener('submit', connect, true)
-messageForm.addEventListener('submit', sendMessage, true)
+$('#usernameForm').submit(connect);
+$('#messageForm').submit(sendMessage)
