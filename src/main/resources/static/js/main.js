@@ -1,5 +1,6 @@
 'use strict';
 
+var nameInput = $('#name');
 var messageInput = $('#message');
 var messageArea = $('#messageArea');
 var countersArea = $('#countersArea');
@@ -8,8 +9,10 @@ var chatConnectingElement = $('#chatConnecting');
 var stompClient = null;
 var username = null;
 
+nameInput.focus();
+
 function connect(event) {
-    username = $('#name').val().trim();
+    username = nameInput.val().trim();
 
     if(username) {
         $('#username-page').addClass('hidden');
@@ -38,6 +41,8 @@ function onConnected() {
 
     chatConnectingElement.addClass('hidden');
     $('#counterConnecting').addClass('hidden');
+
+    messageInput.focus();
 }
 
 
