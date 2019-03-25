@@ -30,6 +30,7 @@ function connect(event) {
 function onConnected() {
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/public', onMessageReceived);
+    stompClient.subscribe('/topic/counters-update', onCountersUpdateReceived);
 
     // Tell your username to the server
     stompClient.send("/app/chat.addUser",
@@ -91,15 +92,6 @@ function onMessageReceived(payload) {
 
         messageElement.append(timestampElement);
         messageElement.append(usernameElement);
-
-        $.each(message.increments, function(index, value) {
-            var counterValue = document.querySelector("#" + value);
-            if (counterValue !== null) {
-                counterValue.textContent = Number(counterValue.textContent) + 1;
-            } else {
-                appendCounterElement(value, 1);
-            }
-        });
     }
 
     var textElement = $('<p></p>');
@@ -109,6 +101,18 @@ function onMessageReceived(payload) {
 
     messageArea.append(messageElement);
     messageArea.scrollTop(messageArea.prop("scrollHeight"));
+}
+
+function onCountersUpdateReceived(data) {
+    $.each(JSON.parse(data.body), function(key, value) {
+        var counterElement = countersArea.find('#' + key);
+        console.log(counterElement);
+        if (counterElement.length !== 0) {
+            counterElement.text(value);
+        } else {
+            appendCounterElement(key, value);
+        }
+    });
 }
 
 function initWordCounters () {
@@ -143,8 +147,7 @@ function createCounterElement(key, value) {
 function appendCounterElement(key, value) {
     var counterElement = createCounterElement(key, value);
 
-
-    if (countersArea.length == 0) {
+    if (countersArea.length === 0) {
         countersArea.append(counterElement);
     } else {
         // alphabetical order
@@ -163,7 +166,6 @@ function appendCounterElement(key, value) {
             countersArea.append(counterElement);
         }
     }
-
 }
 
 $('#usernameForm').submit(connect);

@@ -3,6 +3,7 @@ package com.virtuace.groupchat.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -13,6 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 @Configuration
 @EnableWebSocketMessageBroker
+@EnableScheduling
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
     @Override
@@ -28,6 +30,11 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Bean
     public ConcurrentMap<String, AtomicLong> wordCounters() {
+        return new ConcurrentSkipListMap<>();
+    }
+
+    @Bean
+    public ConcurrentMap<String, Long> wordCountersUpdates() {
         return new ConcurrentSkipListMap<>();
     }
 

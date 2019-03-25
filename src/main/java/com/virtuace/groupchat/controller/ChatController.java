@@ -1,7 +1,6 @@
 package com.virtuace.groupchat.controller;
 
 import com.virtuace.groupchat.model.ChatMessage;
-import com.virtuace.groupchat.model.ChatIncrementMessage;
 import com.virtuace.groupchat.service.TimeService;
 import com.virtuace.groupchat.service.WordsCounterService;
 import com.virtuace.groupchat.service.WordsExtractorService;
@@ -34,14 +33,7 @@ public class ChatController {
         Iterable<String> wordsToIncrement = wordsExtractorService.extract(chatMessage.getContent());
         wordsCounterService.incrementCounters(wordsToIncrement);
 
-        ChatIncrementMessage chatIncrementMessage = new ChatIncrementMessage();
-        chatIncrementMessage.setType(chatMessage.getType());
-        chatIncrementMessage.setSender(chatMessage.getSender());
-        chatIncrementMessage.setContent(chatMessage.getContent());
-        chatIncrementMessage.setIncrements(wordsToIncrement);
-        chatIncrementMessage.setTimestamp(timeService.getCurrentTimeMillis());
-
-        return chatIncrementMessage;
+        return chatMessage;
     }
 
     @MessageMapping("/chat.addUser")

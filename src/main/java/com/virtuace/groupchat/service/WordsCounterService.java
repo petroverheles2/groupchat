@@ -10,10 +10,12 @@ import java.util.concurrent.atomic.AtomicLong;
 public class WordsCounterService {
 
     private final ConcurrentMap<String, AtomicLong> wordCounters;
+    private final ConcurrentMap<String, Long> wordCountersUpdates;
 
     @Autowired
-    public WordsCounterService(ConcurrentMap<String, AtomicLong> wordCounters) {
+    public WordsCounterService(ConcurrentMap<String, AtomicLong> wordCounters, ConcurrentMap<String, Long> wordCountersUpdates) {
         this.wordCounters = wordCounters;
+        this.wordCountersUpdates = wordCountersUpdates;
     }
 
     public void incrementCounters(Iterable<String> words) {
@@ -21,6 +23,9 @@ public class WordsCounterService {
             return;
         }
 
-        words.forEach(word -> wordCounters.computeIfAbsent(word, w -> new AtomicLong()).incrementAndGet());
+        words.forEach(word -> {
+            long currentCount = wordCounters.computeIfAbsent(word, w -> new AtomicLong()).incrementAndGet();
+            wordCountersUpdates.put(word, currentCount);
+        });
     }
 }

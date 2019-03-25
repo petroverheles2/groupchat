@@ -17,12 +17,11 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 @Slf4j
 public class WebSocketEventListener {
 
-    @Autowired
     private final SimpMessageSendingOperations messagingTemplate;
 
-    @Autowired
     private final TimeService timeService;
 
+    @Autowired
     public WebSocketEventListener(SimpMessageSendingOperations messagingTemplate, TimeService timeService) {
         this.messagingTemplate = messagingTemplate;
         this.timeService = timeService;
