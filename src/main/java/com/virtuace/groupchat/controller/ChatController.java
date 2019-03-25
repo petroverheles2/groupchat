@@ -3,6 +3,7 @@ package com.virtuace.groupchat.controller;
 import com.virtuace.groupchat.model.ChatMessage;
 import com.virtuace.groupchat.service.TimeService;
 import com.virtuace.groupchat.service.WordsCounterService;
+import com.virtuace.groupchat.service.WordsCounterUpdateService;
 import com.virtuace.groupchat.service.WordsExtractorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,12 +18,14 @@ public class ChatController {
     private final WordsExtractorService wordsExtractorService;
     private final TimeService timeService;
     private final WordsCounterService wordsCounterService;
+    private final WordsCounterUpdateService wordsCounterUpdateService;
 
     @Autowired
-    public ChatController(WordsExtractorService wordsExtractorService, WordsCounterService wordsCounterService, TimeService timeService) {
+    public ChatController(WordsExtractorService wordsExtractorService, WordsCounterService wordsCounterService, TimeService timeService, WordsCounterUpdateService wordsCounterUpdateService) {
         this.wordsExtractorService = wordsExtractorService;
         this.timeService = timeService;
         this.wordsCounterService = wordsCounterService;
+        this.wordsCounterUpdateService = wordsCounterUpdateService;
     }
 
 
@@ -32,6 +35,7 @@ public class ChatController {
 
         Iterable<String> wordsToIncrement = wordsExtractorService.extract(chatMessage.getContent());
         wordsCounterService.incrementCounters(wordsToIncrement);
+        wordsCounterUpdateService.addUpdatedWord(wordsToIncrement);
 
         return chatMessage;
     }

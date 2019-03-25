@@ -3,20 +3,22 @@ package com.virtuace.groupchat.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Configuration
 @EnableWebSocketMessageBroker
 @EnableScheduling
+@EnableAsync
 public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
 
     @Override
@@ -37,7 +39,7 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Bean
     public Set<String> wordCountersUpdates() {
-        return ConcurrentHashMap.newKeySet();
+        return new HashSet<>();
     }
 
 }
