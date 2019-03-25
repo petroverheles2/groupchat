@@ -5,13 +5,9 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 public class WordsExtractorService {
-    private static final Pattern PATTERN = Pattern.compile("(?<!\\pL|\\pN)\\pL+(?!\\pL|\\pN)");
-
     /**
      *
      * Extracts all the words in the given string, stripping numbers, punctuation and special chars
@@ -25,11 +21,22 @@ public class WordsExtractorService {
             return Collections.emptyList();
         }
 
-        Matcher matcher = PATTERN.matcher(sentence);
-
         List<String> words = new ArrayList<>();
-        while (matcher.find()) {
-            words.add(matcher.group().toLowerCase());
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < sentence.length(); i++) {
+            char ch = sentence.charAt(i);
+            if (Character.isLetter(ch)) {
+                stringBuilder.append(ch);
+            } else if(stringBuilder.length() > 0) {
+                words.add(stringBuilder.toString().toLowerCase());
+                stringBuilder.setLength(0);
+            }
+        }
+
+        // adding last word in sentence if there were no letter chars after it
+        if (stringBuilder.length() > 0) {
+            words.add(stringBuilder.toString().toLowerCase());
         }
 
         return words;

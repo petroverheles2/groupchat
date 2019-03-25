@@ -78,7 +78,7 @@ public class WordsExtractorServiceTest {
 
     @Test(timeout = 100L)
     public void permormanceTest() {
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 100000; i++) {
             wordsExtractorService.extract("Привет всем. Приятно познакомиться!");
         }
     }
