@@ -21,7 +21,9 @@ public class WordsCounterUpdateService {
 
     @Scheduled(fixedDelay = 500)
     public void sendUpdate() {
-        messagingTemplate.convertAndSend("/topic/counters-update", wordCountersUpdates);
-        wordCountersUpdates.clear();
+        synchronized (wordCountersUpdates) {
+            messagingTemplate.convertAndSend("/topic/counters-update", wordCountersUpdates);
+            wordCountersUpdates.clear();
+        }
     }
 }
