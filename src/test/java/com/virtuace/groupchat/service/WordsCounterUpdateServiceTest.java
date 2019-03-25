@@ -8,7 +8,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 
-import java.util.concurrent.ConcurrentMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WordsCounterUpdateServiceTest {
@@ -18,11 +20,14 @@ public class WordsCounterUpdateServiceTest {
     private SimpMessageSendingOperations simpMessageSendingOperations;
 
     @Mock
-    private ConcurrentMap<String, Long> wordCountersUpdates;
+    private Set<String> wordCountersUpdates;
+
+    @Mock
+    private Map<String, AtomicLong> wordCounters;
 
     @Before
     public void setUp() {
-        wordsCounterUpdateService = new WordsCounterUpdateService(simpMessageSendingOperations, wordCountersUpdates);
+        wordsCounterUpdateService = new WordsCounterUpdateService(simpMessageSendingOperations, wordCountersUpdates, wordCounters);
     }
 
     @Test
