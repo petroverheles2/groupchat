@@ -67,19 +67,19 @@ public class WordsCounterServiceTest {
         assertThat(wordCounters.get("test3").get()).isEqualTo(1L);
     }
 
-    @Test(timeout = 100L)
+    @Test(timeout = 500L)
     public void performanceTestForSingleWord() {
         List<String> words = Collections.singletonList("test");
         IntStream.range(0, 1000000).forEach(i -> wordsCounterService.incrementCounters(words));
     }
 
-    @Test(timeout = 100L)
+    @Test(timeout = 500L)
     public void performanceParallelTestForSingleWord() {
         List<String> words = Collections.singletonList("test");
         IntStream.range(0, 1000000).parallel().forEach(i -> wordsCounterService.incrementCounters(words));
     }
 
-    @Test
+    @Test(timeout = 500L)
     public void performanceTestForLotsOfWords() {
         List<List<String>> words = new ArrayList<>();
 
@@ -92,7 +92,7 @@ public class WordsCounterServiceTest {
         });
 
         IntStream.range(0, 100).forEach(i ->
-                words.forEach(internalWords ->
+                words.parallelStream().forEach(internalWords ->
                     wordsCounterService.incrementCounters(internalWords))
                 );
     }
