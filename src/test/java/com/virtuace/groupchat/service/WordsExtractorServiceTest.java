@@ -3,6 +3,8 @@ package com.virtuace.groupchat.service;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.stream.IntStream;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class WordsExtractorServiceTest {
@@ -76,11 +78,9 @@ public class WordsExtractorServiceTest {
         assertThat(words.iterator().next()).isEqualTo("привет");
     }
 
-    @Test(timeout = 100L)
+    @Test(timeout = 500L)
     public void permormanceTest() {
-        for (int i = 0; i < 100000; i++) {
-            wordsExtractorService.extract("Привет всем. Приятно познакомиться!");
-        }
+        IntStream.range(0, 500000).forEach(i -> wordsExtractorService.extract("Привет всем. Приятно познакомиться!"));
     }
 
 }
