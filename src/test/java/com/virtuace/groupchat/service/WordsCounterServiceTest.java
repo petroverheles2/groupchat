@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.IntStream;
 
@@ -13,11 +13,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class WordsCounterServiceTest {
 
     private WordsCounterService wordsCounterService;
-    private ConcurrentHashMap<String, AtomicLong> wordCounters;
+    private ConcurrentSkipListMap<String, AtomicLong> wordCounters;
 
     @Before
     public void setUp() {
-        wordCounters = new ConcurrentHashMap<>();
+        wordCounters = new ConcurrentSkipListMap<>();
         wordsCounterService = new WordsCounterService(wordCounters);
     }
 
@@ -67,13 +67,13 @@ public class WordsCounterServiceTest {
         assertThat(wordCounters.get("test3").get()).isEqualTo(1L);
     }
 
-    @Test(timeout = 500L)
+    @Test(timeout = 100L)
     public void performanceTestForSingleWord() {
         List<String> words = Collections.singletonList("test");
         IntStream.range(0, 1000000).forEach(i -> wordsCounterService.incrementCounters(words));
     }
 
-    @Test(timeout = 500L)
+    @Test(timeout = 100L)
     public void performanceParallelTestForSingleWord() {
         List<String> words = Collections.singletonList("test");
         IntStream.range(0, 1000000).parallel().forEach(i -> wordsCounterService.incrementCounters(words));
