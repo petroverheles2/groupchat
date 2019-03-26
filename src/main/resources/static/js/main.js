@@ -104,7 +104,9 @@ function onMessageReceived(payload) {
 }
 
 function getEncodedKey(key) {
-    return btoa(unescape(encodeURIComponent(key))).replace(/=/g, '-');
+    return btoa(unescape(encodeURIComponent(key)))
+        .replace(/=/g, '-')
+        .replace(/\//g, '_');
 }
 
 function onCountersUpdateReceived(data) {
