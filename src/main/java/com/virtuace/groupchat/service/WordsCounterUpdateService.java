@@ -3,44 +3,35 @@ package com.virtuace.groupchat.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class WordsCounterUpdateService {
 
     private final SimpMessageSendingOperations messagingTemplate;
-    private final Set<String> wordCountersUpdates;
     private final Map<String, AtomicLong> wordCounters;
 
     @Autowired
-    public WordsCounterUpdateService(SimpMessageSendingOperations messagingTemplate, Set<String> updatedWords, Map<String, AtomicLong> wordCounters) {
+    public WordsCounterUpdateService(SimpMessageSendingOperations messagingTemplate, Map<String, AtomicLong> wordCounters) {
         this.messagingTemplate = messagingTemplate;
-        this.wordCountersUpdates = updatedWords;
         this.wordCounters = wordCounters;
     }
 
-    @Scheduled(fixedDelay = 500)
-    public void sendUpdate() {
-        synchronized (wordCountersUpdates) {
-            Map<String, Long> counterUpdates = new HashMap<>();
-            for (String word : wordCountersUpdates) {
-                counterUpdates.put(word, wordCounters.get(word).longValue());
-            }
-            messagingTemplate.convertAndSend("/topic/counters-update", counterUpdates);
-            wordCountersUpdates.clear();
-        }
-    }
-
     @Async
-    public void addUpdatedWord(Iterable<String> words) {
-        synchronized (wordCountersUpdates) {
-            words.forEach(wordCountersUpdates::add);
+    public void sendUpdate(Iterable<String> words) {
+        if (words == null) {
+            return;
         }
+
+        Map<String, Long> counterUpdates = new HashMap<>();
+        for (String word : words) {
+            counterUpdates.put(word, wordCounters.get(word).longValue());
+        }
+
+        messagingTemplate.convertAndSend("/topic/counters-update", counterUpdates);
     }
 }

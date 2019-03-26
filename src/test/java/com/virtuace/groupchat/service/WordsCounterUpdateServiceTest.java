@@ -3,6 +3,7 @@ package com.virtuace.groupchat.service;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -25,30 +26,19 @@ public class WordsCounterUpdateServiceTest {
     @Mock
     private SimpMessageSendingOperations simpMessageSendingOperations;
 
-    private Set<String> wordUpdates = new HashSet<>();
-
     private Map<String, AtomicLong> wordCounters = new HashMap<>();
 
     @Before
     public void setUp() {
-        wordsCounterUpdateService = new WordsCounterUpdateService(simpMessageSendingOperations, wordUpdates, wordCounters);
+        wordsCounterUpdateService = new WordsCounterUpdateService(simpMessageSendingOperations, wordCounters);
     }
 
     @Test
     public void sendUpdate() {
-        wordUpdates.add("test");
         wordCounters.put("test", new AtomicLong(1L));
-        wordsCounterUpdateService.sendUpdate();
-        //Mockito.verify(simpMessageSendingOperations).convertAndSend("/topic/counters-update", wordUpdates);
-        assertThat(wordUpdates).isEmpty();
-    }
-
-    @Test
-    public void addWords() {
-        wordUpdates.add("test");
-        List<String> words = Arrays.asList("test1", "test2");
-        wordsCounterUpdateService.addUpdatedWord(words);
-        assertThat(wordUpdates).contains("test1");
-        assertThat(wordUpdates).contains("test2");
+        wordsCounterUpdateService.sendUpdate(Arrays.asList("test"));
+        ArgumentCaptor captor = ArgumentCaptor.forClass(Map.class);
+        Mockito.verify(simpMessageSendingOperations).convertAndSend(Mockito.eq("/topic/counters-update"), captor.capture());
+        assertThat(((Map)captor.getValue()).get("test")).isEqualTo(1L);
     }
 }

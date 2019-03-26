@@ -9,9 +9,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -35,11 +33,6 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Bean
     public Map<String, AtomicLong> wordCounters() {
         return new ConcurrentSkipListMap<>();
-    }
-
-    @Bean
-    public Set<String> wordCountersUpdates() {
-        return new HashSet<>();
     }
 
 }

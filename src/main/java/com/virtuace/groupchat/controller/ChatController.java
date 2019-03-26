@@ -35,7 +35,7 @@ public class ChatController {
 
         Iterable<String> wordsToIncrement = wordsExtractorService.extract(chatMessage.getContent());
         wordsCounterService.incrementCounters(wordsToIncrement);
-        wordsCounterUpdateService.addUpdatedWord(wordsToIncrement);
+        wordsCounterUpdateService.sendUpdate(wordsToIncrement);
 
         return chatMessage;
     }

@@ -15,27 +15,23 @@ public class WordsCounterServiceTest {
 
     private WordsCounterService wordsCounterService;
     private Map<String, AtomicLong> wordCounters;
-    private Set<String> wordCountersUpdates;
 
     @Before
     public void setUp() {
         wordCounters = new ConcurrentSkipListMap<>();
-        wordCountersUpdates = ConcurrentHashMap.newKeySet();
-        wordsCounterService = new WordsCounterService(wordCounters, wordCountersUpdates);
+        wordsCounterService = new WordsCounterService(wordCounters);
     }
 
     @Test
     public void nullArgument() {
         wordsCounterService.incrementCounters(null);
         assertThat(wordCounters).isEmpty();
-        assertThat(wordCountersUpdates).isEmpty();
     }
 
     @Test
     public void emptyListArgument() {
         wordsCounterService.incrementCounters(new ArrayList<>(0));
         assertThat(wordCounters).isEmpty();
-        assertThat(wordCountersUpdates).isEmpty();
     }
 
     @Test
@@ -44,9 +40,6 @@ public class WordsCounterServiceTest {
 
         assertThat(wordCounters).hasSize(1);
         assertThat(wordCounters.get("test").get()).isEqualTo(1L);
-
-        assertThat(wordCountersUpdates).hasSize(1);
-        assertThat(wordCountersUpdates).contains("test");
     }
 
     @Test
@@ -56,10 +49,6 @@ public class WordsCounterServiceTest {
         assertThat(wordCounters).hasSize(2);
         assertThat(wordCounters.get("test1").get()).isEqualTo(1L);
         assertThat(wordCounters.get("test2").get()).isEqualTo(1L);
-
-        assertThat(wordCountersUpdates).hasSize(2);
-        assertThat(wordCountersUpdates).contains("test1");
-        assertThat(wordCountersUpdates).contains("test2");
     }
 
     @Test
@@ -68,9 +57,6 @@ public class WordsCounterServiceTest {
 
         assertThat(wordCounters).hasSize(1);
         assertThat(wordCounters.get("test3").get()).isEqualTo(2L);
-
-        assertThat(wordCountersUpdates).hasSize(1);
-        assertThat(wordCountersUpdates).contains("test3");
     }
 
     @Test
@@ -81,21 +67,12 @@ public class WordsCounterServiceTest {
         assertThat(wordCounters.get("test1").get()).isEqualTo(1L);
         assertThat(wordCounters.get("test2").get()).isEqualTo(1L);
 
-        assertThat(wordCountersUpdates).hasSize(2);
-        assertThat(wordCountersUpdates).contains("test1");
-        assertThat(wordCountersUpdates).contains("test2");
-
-        wordCountersUpdates.clear();
         wordsCounterService.incrementCounters(Arrays.asList("test1", "test3"));
 
         assertThat(wordCounters).hasSize(3);
         assertThat(wordCounters.get("test1").get()).isEqualTo(2L);
         assertThat(wordCounters.get("test2").get()).isEqualTo(1L);
         assertThat(wordCounters.get("test3").get()).isEqualTo(1L);
-
-        assertThat(wordCountersUpdates).hasSize(2);
-        assertThat(wordCountersUpdates).contains("test1");
-        assertThat(wordCountersUpdates).contains("test3");
     }
 
     @Test(timeout = 500L)
