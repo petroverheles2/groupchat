@@ -60,9 +60,8 @@ public class WordsExtractorServiceTest {
     @Test
     public void wordWithApostroph() {
         Iterable<String> words = wordsExtractorService.extract("it's my life");
-        assertThat(words).hasSize(4);
-        assertThat(words).contains("it");
-        assertThat(words).contains("s");
+        assertThat(words).hasSize(3);
+        assertThat(words).contains("it's");
         assertThat(words).contains("my");
         assertThat(words).contains("life");
     }

@@ -103,9 +103,14 @@ function onMessageReceived(payload) {
     messageArea.scrollTop(messageArea.prop("scrollHeight"));
 }
 
+function getEncodedKey(key) {
+    return btoa(unescape(encodeURIComponent(key))).replace(/=/g, '-');
+}
+
 function onCountersUpdateReceived(data) {
     $.each(JSON.parse(data.body), function(key, value) {
-        var counterElement = countersArea.find('#' + key);
+        var encodedKey = getEncodedKey(key);
+        var counterElement = countersArea.find("#" + encodedKey);
         console.log(counterElement);
         if (counterElement.length !== 0) {
             counterElement.text(value);
@@ -127,6 +132,8 @@ function initWordCounters () {
 
 function createCounterElement(key, value) {
 
+    var encodedKey = getEncodedKey(key);
+
     var counterElement = $('<li></li>');
     counterElement.addClass('chat-message');
 
@@ -136,7 +143,7 @@ function createCounterElement(key, value) {
     counterElement.append(wordElement);
 
     var valueElement = $('<span></span>');
-    valueElement.attr('id', key);
+    valueElement.attr('id', encodedKey);
     valueElement.text(value);
 
     counterElement.append(valueElement);
@@ -153,7 +160,7 @@ function appendCounterElement(key, value) {
         // alphabetical order
         var added = false;
         countersArea.find('li').each(function() {
-            var word = $(this).find('span:last').attr('id');
+            var word = $(this).find('span:last').val();
 
             if (word.localeCompare(key) > 0) {
                 $(this).before(counterElement);

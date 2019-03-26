@@ -2,17 +2,15 @@ package com.virtuace.groupchat.service;
 
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
 @Service
 public class WordsExtractorService {
 
-    private static final String SPLIT_REGEXP = "[\\.,\\s!;?:\"']+";
+    private static final String SPLIT_REGEXP = "[\\.,\\s!;?:\"]+";
 
     /**
      *
