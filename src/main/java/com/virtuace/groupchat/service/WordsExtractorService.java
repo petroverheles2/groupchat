@@ -3,11 +3,17 @@ package com.virtuace.groupchat.service;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class WordsExtractorService {
+
+    private static final String SPLIT_REGEXP = "[\\.,\\s!;?:\"']+";
+
     /**
      *
      * Extracts all the words in the given string, stripping numbers, punctuation and special chars
@@ -21,24 +27,6 @@ public class WordsExtractorService {
             return Collections.emptyList();
         }
 
-        List<String> words = new ArrayList<>();
-
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < sentence.length(); i++) {
-            char ch = sentence.charAt(i);
-            if (Character.isLetter(ch)) {
-                stringBuilder.append(ch);
-            } else if(stringBuilder.length() > 0) {
-                words.add(stringBuilder.toString().toLowerCase());
-                stringBuilder.setLength(0);
-            }
-        }
-
-        // adding last word in sentence if there were no letter chars after it
-        if (stringBuilder.length() > 0) {
-            words.add(stringBuilder.toString().toLowerCase());
-        }
-
-        return words;
+        return Arrays.stream(sentence.split(SPLIT_REGEXP)).filter(s -> !s.isEmpty()).map(String::toLowerCase).collect(toList());
     }
 }
