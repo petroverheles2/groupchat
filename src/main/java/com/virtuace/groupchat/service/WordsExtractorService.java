@@ -14,7 +14,7 @@ public class WordsExtractorService {
 
     /**
      *
-     * Extracts all the words in the given string, stripping numbers, punctuation and special chars
+     * Extracts all the words in the given string, splitting a sentence by spaces and punctuation signs
      * The extracted words are transformed to lower case
      *
      * @param sentence incoming sentence
